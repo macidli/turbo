@@ -848,5 +848,12 @@ let data = [
         dates: " Bu gün  14:30",
     },
 ]
+data = data.map( (item ,i) => {
+    return{
+        ...item,
+        id : i + 1,
+        status: false
+    }
+})
 
 const copyData = [...data]

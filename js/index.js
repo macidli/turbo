@@ -6,14 +6,16 @@ const yearMin = document.getElementById('yearMin')
 const yearMax = document.getElementById('yearMax')
 const btnArtir = document.getElementById('btnArtir')
 const error = document.getElementById('error')
+const sidebar = document.getElementById('sidebar')
+let staus = document.getElementById('status')
 const select = document.querySelectorAll('#selects select')
+const likeDiv =document.getElementById('likeDiv')
 
 
-
-let markaArr = [...(new Set(data.map(item => { return item.brand })))]
-let modelArr = [...(new Set(data.map (item => {return item.model})))]
-let cityArr = [...(new Set(data.map(item => { return item.city })))]
-let banTypeArr = [...(new Set(data.map(item => { return item.banType })))]
+let markaArr =Array.from(new Set( data.map (item => item.brand) )) 
+let modelArr  =Array.from(new Set( data.map (item => item.model) )) 
+let cityArr =Array.from(new Set( data.map (item => item.city) )) 
+let banTypeArr =Array.from(new Set( data.map (item => item.banType) )) 
 
 let count = 8
 function show() {
@@ -23,11 +25,14 @@ function show() {
             .slice(0, count)
             .map((item, i) => {
                 content.innerHTML += `
-                       <article class="flex flex-col dark:bg-gray-50">
+                        <article class="flex flex-col rounded-[7px] bg-white shadow-lg">
                             <div class="relative">
-                               <img alt="car" class="object-cover rounded-tl-[8px] rounded-tr-[8px] w-full h-52 rounded-t-lg" src="${item.images[0]}" />
-
-                                    <i style="color:white" class="fa-regular fa-heart absolute right-2 top-2 text-[22px] cursor-pointer"></i>
+                                <img alt="car" class="max-h-[200px] h-52 object-cover rounded-tl-[8px] rounded-tr-[8px] w-full rounded-t-lg" 
+                                    src="${item.images[0]}" />
+                                <i onclick="addBasket(${item.id}, ${item.price}, '${item.model}', '${item.brand}', '${item.currency}', '${item.images[0]}', '${i}')"
+                                class="fa-regular fa-heart absolute top-2 right-2 text-[22px] cursor-pointer transition-all duration-300 ease-in-out hover:scale-110 hover:text-red-500 bg-white p-2 rounded-full shadow-md z-20"
+                                style="color:${item.status ? 'red' : 'gray'}">
+                                </i>
                             </div>
                             <div class="flex flex-col flex-1 p-3">
                                 <h3 class="flex-1 pt-2 pb-[2px] text-[18px] font-[700] leading-snug">${item.price} ${item.currency}</h3>
@@ -38,7 +43,7 @@ function show() {
                                 </div>
                             </div>
                         </article>
-        `
+                        `
             })
     }else {
         btnArtir.style.display = 'none'
@@ -61,8 +66,56 @@ function show() {
 }
  show()
 
+ let basket =[]
 
-function handleSelect() {
+ function addBasket(id, price, currency, brand, model, images) {
+    const obj = { id, price, currency, brand, model, images, count: 1 };
+    
+    // Əgər həmin məhsul artıq basket içərisindədirsə, sayını artır
+    const existingItem = basket.find(item => item.id === id);
+    if (existingItem) {
+        existingItem.count += 1;
+    } else {
+        basket.push(obj);
+    }
+
+    // Məhsulun statusunu dəyiş
+    const index = data.findIndex(item => item.id === id);
+    if (index !== -1) {
+        data[index].status = true;
+    }
+
+    show();
+    showBasket();
+}
+
+ 
+ function showBasket() {
+    likeDiv.innerHTML = '';
+    basket.forEach((item, i) => {
+        likeDiv.innerHTML += `
+        <div class="border">
+            <div class="flex justify-end">
+                <i onclick="favDelete(${item.id})" class="fa-solid fa-xmark cursor-pointer"></i>
+            </div>
+            <div class="flex items-center p-2 space-x-4">
+                <img src="${item.images}" alt="" class="w-[80px] h-[80px] rounded-full dark:bg-gray-500" />
+                <div>
+                    <h2 class="text-lg font-semibold">${item.brand} ${item.model}</h2>
+                    <span class="flex items-center space-x-1">Say: ${item.count}</span>
+                    <div class="text-[1em] text-black">${item.price} ${item.currency}</div>
+                    <div class="flex flex-row">
+                        <button onclick="changeCount(-1, ${i}, ${item.id})" class="px-1 bg-[#ca1016] text-white font-semibold w-[20px] h-[20px] mr-2 rounded">-</button>
+                        <button onclick="changeCount(1, ${i}, ${item.id})" class="px-1 mx-2 text-white bg-[#7ed321] w-[20px] h-[20px] font-semibold rounded">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    });
+}
+
+
+ function handleSelect() {
     markaArr.map(item => {
         marka.innerHTML += `<option>${item}</option>`
     })
@@ -82,26 +135,59 @@ function handleSelect() {
 }
 handleSelect()
 
+
+let flag =true;
+function likeOpen(e){
+e.preventDefault()
+sidebar.style.right = flag ? '0%' : '-100%'
+ flag =!flag
+ 
+}
+
+function deleteAll() {
+    data.forEach(item => {
+        item.status = false
+    })
+    basket.length = 0
+    likeDiv.innerHTML = ''
+    show()
+}
+function favDelete(id) {
+    const yeniArr = basket.filter(item => item.id !== id)
+    basket = yeniArr
+    data.filter(item => { if (id == item.id) item.status = false })
+    showBasket()
+    show()
+}
+function changeCount(deyisen, index, id) {  
+    basket.map((item, i) => {
+        if (i == index) item.count += deyisen
+        if (item.count == 0) {
+            basket.splice(i, 1)
+            data.filter(item => { if (id == item.id) item.status = false })
+            show()
+        }
+    })
+    showBasket()
+}
+function artir(){
+    if(count < data.length ) {
+        count += 8
+        if( count > data.length) btnArtir.style.display='none'  
+        show() // her defe show funk cagiririqqq!!!
+    }
+    
+}
+
 function filtr(axtar, select) {
-    count = 8
-    btnArtir.style.display = 'flex'
+    if(count > 8)btnArtir.style.display = 'flex'
     const yeniArr = copyData.filter(item => item[axtar] == select.value)
     data = yeniArr
     show()
 }
 
-
- function artir(){
-    if(count < data.length ) {
-        count += 8
-        if( count > data.length) btnArtir.style.display='none'  
-        show()
-    }
-
- }
-
- 
- function etrafliAxtaris() {
+function etrafliAxtaris(e) {
+    e.preventDefault()
     const marka = select[0].value
     const model = select[1].value
     const city = select[2].value
@@ -110,4 +196,5 @@ function filtr(axtar, select) {
     )
     data = yeniArr
     show()
+    
 }

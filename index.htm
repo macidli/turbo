@@ -7,14 +7,6 @@
     <link rel="stylesheet" href="output.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>Turbo</title>
-    <style>
-        img {
-        width: 100%;
-        height: 250px;
-        object-fit: cover;
-        border-radius: 8px 8px 0 0;
-}
-    </style>
 </head>
 <body>
     <div  class="flex text-center flex-col md:flex-row px-2 pt-1  justify-between md:justify-around items-center relative shadow pb-2  bg-[#f6f7fa] text-white">
@@ -28,7 +20,7 @@
             <span class="text-black"> Dəstək: <a class="  text-[.9em] hover:text-[#ca1016] " href="/">(012) 526-47-47</a></span>
             <a class="hover:text-[#ca1016]  text-[#8d94ad] text-[.9em]" href="/services">Yardım</a>
             <a class="hover:text-[#ca1016] text-[#8d94ad] text-[.9em]" href="/project">RU</a>
-            <a class="hover:text-[#ca1016]  text-[#8d94ad] text-[.9em]" href="/services"><i class="fa-solid fa-heart  px-1 "></i>Seçilmişlər</a>
+            <a  onclick="likeOpen(event)" class="hover:text-[#ca1016]  text-[#8d94ad] text-[.9em]" href="/services"><i class="fa-solid fa-heart  px-1 "></i>Seçilmişlər</a>
             <a class="hover:text-[#ca1016]  text-[#8d94ad] text-[.9em]" href="/project"><i class="fa-solid fa-user  px-1 hover:text-[#ca1016]" ></i>Giriş</a>
         </div>
     </div>
@@ -64,9 +56,22 @@
         </nav>
     </header>
     <main>
-        <div class="flex gap-5 pt-[25px] text-center flex-col md:flex-row px-2  justify-center  items-center relative   bg-[#ebedf3] text-white">
+        <div id="sidebar" class="  fixed overflow-y-auto  right-[-100%] z-10 h-full top-0 max-w-[300px] w-full p-3 space-y-2 bg-slate-300">
+            <div class="flex justify-between">
+                <i onclick="likeOpen(event)" class="fa-solid fa-xmark cursor-pointer"></i>
+                <button onclick="deleteAll()"  class=" text-[15px]  bg-[#ca1016] px-2 py-1 rounded text-white hover:bg-[#b02b2f]">Delete</button>
+            </div>
+            <hr/>
+            <div id="likeDiv"></div>
+            
+        </div>
+
+
+
+
+        <div id="selects" class="flex gap-5 pt-[25px] text-center flex-col md:flex-row px-2  justify-center  items-center relative   bg-[#ebedf3] text-white">
             <select  id="marka" onchange="filtr('brand', this)"  class="h-[46px] cursor-pointer text-[#8d94ad] outline-none max-w-[235px] w-[100%] rounded-[7px] border p-2  focus:border focus:border-[#8080808f]"></select>
-            <select  id="model"  onchange="filtr('brand', this)" class="h-[46px] cursor-pointer text-[#8d94ad] outline-none max-w-[235px] w-[100%] rounded-[7px] border p-2 focus:border focus:border-[#8080808f]"></select>
+            <select  id="model"  onchange="filtr('model', this)" class="h-[46px] cursor-pointer text-[#8d94ad] outline-none max-w-[235px] w-[100%] rounded-[7px] border p-2 focus:border focus:border-[#8080808f]"></select>
 
             <div class="flex flex-row">
                 <div class="py-[11px] px-2 rounded-bl-[5px] rounded-tl-[5px] text-[#7a8096] bg-white ">Hamısı</div>
@@ -104,7 +109,7 @@
             <div class="flex mini:gap-5  items-center gap-10">
                 <span class="text-[#8d94ad] cursor-default">Sıfırla</span>
                 <span class="text-[#ca1016] cursor-pointer">Daha çox filtr <i class="fa-solid fa-caret-down"></i></span>
-                <button onclick="etrafliAxtaris()" class="rounded-[7px] bg-[#ca1016] text-white mini:px-10 px-1 py-[13px] transition ease-in-out duration-300 hover:bg-[#b80d13]">Elanları göstər</button>
+                <button onclick="etrafliAxtaris(event)" class="rounded-[7px] bg-[#ca1016] text-white mini:px-10 px-1 py-[13px] transition ease-in-out duration-300 hover:bg-[#b80d13]">Elanları göstər</button>
             </div>
         </div>
         </div>
@@ -131,9 +136,11 @@
         </div>
     </main>
 
-    <footer></footer>
+    <footer>
+        <div class="bg-slate-800 w-full h-52"></div>
+    </footer>
 
-    <script src="../js/data.js"></script>
-    <script src="../js/index.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/index.js"></script>
 </body>
 </html>
